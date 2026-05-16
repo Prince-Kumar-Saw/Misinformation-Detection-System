@@ -16,10 +16,11 @@ A Machine Learning and Natural Language Processing (NLP) based web application t
 - ✅ NLP Text Preprocessing
 - ✅ TF-IDF Vectorization
 - ✅ Logistic Regression Classification
-- ✅ SGD Classifier Comparison
 - ✅ Real-time Prediction System
 - ✅ Confidence Score Visualization
 - ✅ Interactive Streamlit Web Interface
+- ✅ Live Deployed AI Application
+- ✅ Modern Professional UI
 
 ---
 
@@ -42,6 +43,7 @@ Misinformation-Detection-System/
 │
 ├── dataset/
 ├── models/
+├── screenshots/
 ├── app.py
 ├── main.py
 ├── requirements.txt
@@ -50,12 +52,23 @@ Misinformation-Detection-System/
 
 ---
 
-## ⚙️ Machine Learning Models Used
+## ⚙️ Machine Learning Workflow
+
+1. Data Collection
+2. Data Cleaning
+3. Text Preprocessing
+4. TF-IDF Vectorization
+5. Model Training
+6. Prediction System
+7. Web Application Deployment
+
+---
+
+## 🤖 Machine Learning Model
 
 | Model | Purpose |
 |---|---|
 | Logistic Regression | Final Deployment Model |
-| SGD Classifier | Performance Comparison |
 
 ---
 
@@ -64,7 +77,6 @@ Misinformation-Detection-System/
 | Model | Accuracy |
 |---|---|
 | Logistic Regression | ~98% |
-| SGD Classifier | ~99% |
 
 ---
 
@@ -76,11 +88,15 @@ Misinformation-Detection-System/
 git clone https://github.com/Prince-Kumar-Saw/Misinformation-Detection-System.git
 ```
 
+---
+
 ### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
+
+---
 
 ### Run Application
 
@@ -92,10 +108,46 @@ streamlit run app.py
 
 ## 📷 Application Preview
 
-(Add screenshots here later)
+### 🏠 Homepage
+
+![Homepage](screenshots/home.png)
+
+---
+
+## 🚨 Fake News Detection Examples
+
+| Example 1 | Example 2 |
+|---|---|
+| ![](screenshots/fake1.png) | ![](screenshots/fake2.png) |
+
+---
+
+## ✅ Real News Detection Examples
+
+| Example 1 | Example 2 |
+|---|---|
+| ![](screenshots/real1.png) | ![](screenshots/real2.png) |
+
+---
+
+## 💡 Future Improvements
+
+- Live News API Integration
+- Explainable AI Predictions
+- User Authentication System
+- Database Integration
+- Advanced NLP Models
 
 ---
 
 ## 👨‍💻 Author
 
 Prince Kumar Saw
+
+ECE Student | Machine Learning Enthusiast
+
+---
+
+## ⭐ Support
+
+If you like this project, consider giving it a star on GitHub.
