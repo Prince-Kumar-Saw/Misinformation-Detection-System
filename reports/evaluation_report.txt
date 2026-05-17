@@ -1,0 +1,18 @@
+AI-Powered Misinformation Detection System
+-----------------------------------------
+
+Accuracy: 99.02%
+
+Classification Report:
+              precision    recall  f1-score   support
+
+        REAL       0.99      0.99      0.99      4284
+        FAKE       0.99      0.99      0.99      4696
+
+    accuracy                           0.99      8980
+   macro avg       0.99      0.99      0.99      8980
+weighted avg       0.99      0.99      0.99      8980
+
+Confusion Matrix:
+[[4254   30]
+ [  58 4638]]

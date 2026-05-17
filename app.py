@@ -2,53 +2,192 @@ import streamlit as st
 import pickle
 import re
 import nltk
+import requests
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
-# Download stopwords
-nltk.download('stopwords')
+# -------------------------------
+# DOWNLOAD NLTK
+# -------------------------------
+nltk.download("stopwords", quiet=True)
 
-# ---------------- PAGE CONFIG ----------------
+# -------------------------------
+# PAGE CONFIG
+# -------------------------------
 st.set_page_config(
     page_title="AI Fake News Detector",
     page_icon="📰",
     layout="centered"
 )
 
-# ---------------- LOAD MODEL ----------------
-model = pickle.load(open("models/model.pkl", "rb"))
-vectorizer = pickle.load(open("models/vectorizer.pkl", "rb"))
+# -------------------------------
+# NEWS API KEY
+# -------------------------------
+API_KEY = "258a43483b6f47769a5592b40bffc13c"
 
-# ---------------- NLP SETUP ----------------
-ps = PorterStemmer()
-stop_words = set(stopwords.words('english'))
+# -------------------------------
+# LOAD MODEL & VECTORIZER
+# -------------------------------
+@st.cache_resource
+def load_models():
 
-# ---------------- TEXT CLEANING ----------------
+    with open("models/model.pkl", "rb") as model_file:
+        model = pickle.load(model_file)
+
+    with open("models/vectorizer.pkl", "rb") as vectorizer_file:
+        vectorizer = pickle.load(vectorizer_file)
+
+    return model, vectorizer
+
+
+model, vectorizer = load_models()
+
+# -------------------------------
+# NLP SETUP
+# -------------------------------
+stemmer = PorterStemmer()
+
+stop_words = set(stopwords.words("english"))
+
+# -------------------------------
+# TRUSTED SOURCES
+# -------------------------------
+trusted_sources = [
+    "BBC News",
+    "BBC",
+    "CNN",
+    "Reuters",
+    "NBC News",
+    "CBS News",
+    "The New York Times",
+    "The Washington Post",
+    "Associated Press",
+    "AP News",
+    "The Guardian",
+    "Al Jazeera English",
+    "ABC News",
+    "Fox News",
+    "CNBC",
+    "The Hindu",
+    "Hindustan Times",
+    "Times of India",
+    "NDTV",
+    "India Today"
+]
+
+# -------------------------------
+# TEXT CLEANING
+# -------------------------------
 def clean_text(text):
+
+    if not isinstance(text, str):
+        return ""
 
     text = text.lower()
 
-    text = re.sub(r'[^a-zA-Z]', ' ', text)
+    text = re.sub(r"[^a-zA-Z]", " ", text)
 
     words = text.split()
 
     words = [
-        ps.stem(word)
+        stemmer.stem(word)
         for word in words
         if word not in stop_words
     ]
 
     return " ".join(words)
 
-# ---------------- CUSTOM CSS ----------------
+# -------------------------------
+# PREDICTION FUNCTION
+# -------------------------------
+def predict_news(news_text):
+
+    cleaned_text = clean_text(news_text)
+
+    vector_input = vectorizer.transform([cleaned_text])
+
+    prediction = model.predict(vector_input)[0]
+
+    probabilities = model.predict_proba(vector_input)[0]
+
+    real_probability = probabilities[0] * 100
+
+    fake_probability = probabilities[1] * 100
+
+    confidence = max(real_probability, fake_probability)
+
+    return (
+        prediction,
+        real_probability,
+        fake_probability,
+        confidence
+    )
+
+# -------------------------------
+# FETCH LIVE NEWS
+# -------------------------------
+def fetch_live_news():
+
+    url = (
+        f"https://newsapi.org/v2/top-headlines?"
+        f"country=us&"
+        f"pageSize=8&"
+        f"apiKey={API_KEY}"
+    )
+
+    try:
+
+        response = requests.get(url, timeout=10)
+
+        data = response.json()
+
+        if data.get("status") != "ok":
+
+            st.error(
+                data.get(
+                    "message",
+                    "Unable to fetch news"
+                )
+            )
+
+            return []
+
+        articles = []
+
+        for article in data.get("articles", []):
+
+            title = article.get("title") or ""
+
+            description = article.get("description") or ""
+
+            content = article.get("content") or ""
+
+            source = article.get("source", {}).get("name", "")
+
+            full_text = f"{title} {description} {content}".strip()
+
+            if full_text:
+
+                articles.append({
+                    "source": source,
+                    "title": title,
+                    "content": full_text
+                })
+
+        return articles
+
+    except Exception as e:
+
+        st.error(f"Error fetching news: {e}")
+
+        return []
+
+# -------------------------------
+# CUSTOM CSS
+# -------------------------------
 st.markdown("""
 <style>
-
-.main {
-    background: linear-gradient(to bottom right, #0f172a, #111827);
-    color: white;
-}
 
 .stApp {
     background: linear-gradient(to bottom right, #0f172a, #111827);
@@ -63,7 +202,7 @@ textarea {
     border-radius: 12px !important;
 }
 
-.stButton>button {
+.stButton > button {
     width: 100%;
     border-radius: 12px;
     height: 3em;
@@ -74,7 +213,7 @@ textarea {
     border: none;
 }
 
-.stButton>button:hover {
+.stButton > button:hover {
     background-color: #1d4ed8;
     color: white;
 }
@@ -105,32 +244,38 @@ textarea {
     margin-top: 10px;
 }
 
-.sidebar .sidebar-content {
-    background-color: #111827;
+.news-card {
+    background-color: rgba(255,255,255,0.08);
+    padding: 18px;
+    border-radius: 15px;
+    margin-top: 15px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- SIDEBAR ----------------
-st.sidebar.title("🧠 About This Project")
+# -------------------------------
+# SIDEBAR
+# -------------------------------
+st.sidebar.title("🧠 About Project")
 
 st.sidebar.info("""
-This AI system detects whether a news article is REAL or FAKE using:
+This system detects whether news is REAL or FAKE using:
 
-✅ Machine Learning  
 ✅ NLP Preprocessing  
 ✅ TF-IDF Vectorization  
 ✅ Logistic Regression  
-
-Developed by Prince Kumar Saw
+✅ Machine Learning  
+✅ Live News Analysis
 """)
 
 st.sidebar.markdown("---")
 
-st.sidebar.success("Model Accuracy: ~98%")
+st.sidebar.success("Model Accuracy: ~94%")
 
-# ---------------- TITLE ----------------
+# -------------------------------
+# TITLE
+# -------------------------------
 st.markdown("""
 <h1 style='text-align:center; font-size:48px;'>
 📰 AI-Powered Misinformation Detection
@@ -139,50 +284,48 @@ st.markdown("""
 
 st.markdown("""
 <p style='text-align:center; font-size:18px; color:lightgray;'>
-Analyze news articles using Machine Learning and Natural Language Processing
+Analyze news articles using Machine Learning and NLP
 </p>
 """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ---------------- INPUT ----------------
-news = st.text_area(
+# -------------------------------
+# USER INPUT
+# -------------------------------
+news_input = st.text_area(
     "✍️ Enter News Article",
     height=250,
-    placeholder="Paste your news article or headline here..."
+    placeholder="Paste your news article here..."
 )
 
-# ---------------- BUTTON ----------------
+# -------------------------------
+# ANALYZE USER NEWS
+# -------------------------------
 if st.button("🔍 Analyze News"):
 
-    if news.strip() == "":
-        st.warning("⚠️ Please enter some news text.")
+    if news_input.strip() == "":
+
+        st.warning("⚠️ Please enter some text.")
 
     else:
 
-        with st.spinner("Analyzing article with AI model..."):
+        with st.spinner("Analyzing article..."):
 
-            cleaned = clean_text(news)
-
-            vector_input = vectorizer.transform([cleaned])
-
-            prediction = model.predict(vector_input)
-
-            probability = model.predict_proba(vector_input)
-
-            real_probability = probability[0][0] * 100
-            fake_probability = probability[0][1] * 100
-
-            confidence = max(real_probability, fake_probability)
+            (
+                prediction,
+                real_probability,
+                fake_probability,
+                confidence
+            ) = predict_news(news_input)
 
         st.markdown("---")
 
         st.subheader("📊 Prediction Result")
 
-        # RESULT DISPLAY
-        if prediction[0] == 1:
+        if prediction == 1:
 
-            st.markdown(f"""
+            st.markdown("""
             <div class="result-box fake-news">
             🚨 FAKE NEWS DETECTED
             </div>
@@ -190,7 +333,7 @@ if st.button("🔍 Analyze News"):
 
         else:
 
-            st.markdown(f"""
+            st.markdown("""
             <div class="result-box real-news">
             ✅ REAL NEWS DETECTED
             </div>
@@ -198,7 +341,6 @@ if st.button("🔍 Analyze News"):
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # CONFIDENCE CARD
         st.markdown(f"""
         <div class="metric-card">
             <h3>🎯 Prediction Confidence</h3>
@@ -208,20 +350,141 @@ if st.button("🔍 Analyze News"):
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # PROBABILITIES
         st.subheader("📈 Probability Analysis")
 
         st.write(f"✅ Real News Probability: {real_probability:.2f}%")
+
         st.progress(int(real_probability))
 
         st.write(f"🚨 Fake News Probability: {fake_probability:.2f}%")
+
         st.progress(int(fake_probability))
 
-# ---------------- FOOTER ----------------
+# -------------------------------
+# LIVE NEWS SECTION
+# -------------------------------
+st.markdown("---")
+
+st.subheader("📰 Analyze Live Current News")
+
+st.info(
+    "Live news prediction is an ML-based credibility estimate. "
+    "Short headlines may be less accurate than full-length articles."
+)
+
+if st.button("📡 Fetch Latest News"):
+
+    with st.spinner("Fetching latest headlines..."):
+
+        live_news = fetch_live_news()
+
+    if len(live_news) == 0:
+
+        st.warning("⚠️ No news articles found.")
+
+    else:
+
+        for idx, article in enumerate(live_news):
+
+            source = article["source"]
+
+            title = article["title"]
+
+            content = article["content"]
+
+            (
+                prediction,
+                real_probability,
+                fake_probability,
+                confidence
+            ) = predict_news(content)
+
+            # -------------------------------
+            # SOURCE-AWARE CALIBRATION
+            # -------------------------------
+            if source in trusted_sources:
+
+                real_probability += 10
+
+                if real_probability > 100:
+                    real_probability = 100
+
+                fake_probability = 100 - real_probability
+
+            confidence = max(
+                real_probability,
+                fake_probability
+            )
+
+            st.markdown("---")
+
+            st.markdown(
+                '<div class="news-card">',
+                unsafe_allow_html=True
+            )
+
+            st.write(f"### 📰 News {idx + 1}")
+
+            st.caption(f"Source: {source}")
+
+            if title:
+                st.write(f"**Title:** {title}")
+
+            st.write(content)
+
+            st.write(
+                f"✅ Real News Probability: "
+                f"{real_probability:.2f}%"
+            )
+
+            st.progress(int(real_probability))
+
+            st.write(
+                f"🚨 Fake News Probability: "
+                f"{fake_probability:.2f}%"
+            )
+
+            st.progress(int(fake_probability))
+
+            # -------------------------------
+            # FINAL RESULT
+            # -------------------------------
+            if real_probability >= fake_probability:
+
+                st.success(
+                    f"✅ Likely Reliable News "
+                    f"({confidence:.2f}%)"
+                )
+
+                st.info(
+                    "This article appears credible based on "
+                    "machine learning analysis and source evaluation."
+                )
+
+            else:
+
+                st.warning(
+                    f"⚠️ Potentially Suspicious News "
+                    f"({confidence:.2f}%)"
+                )
+
+                st.info(
+                    "This article contains linguistic patterns "
+                    "commonly associated with misinformation."
+                )
+
+            st.markdown(
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+# -------------------------------
+# FOOTER
+# -------------------------------
 st.markdown("---")
 
 st.markdown("""
 <p style='text-align:center; color:gray;'>
-Built using Python • Machine Learning • NLP • Streamlit
+Built using Python • NLP • Machine Learning • Streamlit • NewsAPI
 </p>
 """, unsafe_allow_html=True)

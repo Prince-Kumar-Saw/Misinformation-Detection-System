@@ -1,38 +1,81 @@
 # 📰 AI-Powered Misinformation Detection System
 
-A Machine Learning and Natural Language Processing (NLP) based web application that detects whether a news article is REAL or FAKE using advanced text preprocessing and classification models.
+An end-to-end Machine Learning and NLP-based web application that detects whether a news article is likely reliable or potentially suspicious using text analysis, TF-IDF vectorization, and Logistic Regression.
+
+The system also supports real-time live news analysis using NewsAPI integration and provides prediction confidence scores through an interactive Streamlit interface.
 
 ---
 
 ## 🚀 Live Demo
 
-🔗 [Open Live Application](https://misinformation-detection-system-phea3g7eenttlvjzqwcdkt.streamlit.app/)
+🔗 Streamlit App:  
+https://misinformation-detection-system-phea3g7eenttlvjzqwcdkt.streamlit.app/
 
 ---
 
 ## 📌 Features
 
-- ✅ Fake News Detection
-- ✅ NLP Text Preprocessing
-- ✅ TF-IDF Vectorization
-- ✅ Logistic Regression Classification
-- ✅ Real-time Prediction System
-- ✅ Confidence Score Visualization
-- ✅ Interactive Streamlit Web Interface
-- ✅ Live Deployed AI Application
-- ✅ Modern Professional UI
+- ✅ Fake vs Real news classification
+- ✅ NLP-based text preprocessing
+- ✅ TF-IDF feature extraction
+- ✅ Logistic Regression classification model
+- ✅ Real-time news analysis using NewsAPI
+- ✅ Confidence score and probability analysis
+- ✅ Interactive Streamlit UI
+- ✅ Source-aware credibility calibration
+- ✅ Model evaluation report generation
+- ✅ Deployed cloud-based application
 
 ---
 
-## 🛠️ Technologies Used
+## 🛠️ Tech Stack
 
+### Programming Language
 - Python
-- Machine Learning
-- Natural Language Processing (NLP)
+
+### Machine Learning & NLP
 - Scikit-learn
-- Streamlit
-- Pandas
 - NLTK
+- TF-IDF Vectorization
+- Logistic Regression
+
+### Web Application
+- Streamlit
+
+### API Integration
+- NewsAPI
+
+### Version Control & Deployment
+- Git
+- GitHub
+- Streamlit Cloud
+
+---
+
+## 🧠 Machine Learning Pipeline
+
+1. Data Collection using benchmark fake-news datasets
+2. Text preprocessing
+   - Lowercasing
+   - Regex cleaning
+   - Stopword removal
+   - Porter stemming
+3. TF-IDF feature extraction
+4. Model training using Logistic Regression
+5. Prediction probability analysis
+6. Real-time inference and live news evaluation
+
+---
+
+## 📊 Model Performance
+
+- Achieved approximately **94% accuracy**
+- Evaluated using:
+  - Accuracy Score
+  - Precision
+  - Recall
+  - F1-Score
+  - Confusion Matrix
 
 ---
 
@@ -41,46 +84,26 @@ A Machine Learning and Natural Language Processing (NLP) based web application t
 ```bash
 Misinformation-Detection-System/
 │
-├── dataset/
-├── models/
-├── screenshots/
 ├── app.py
 ├── main.py
 ├── requirements.txt
-└── README.md
+├── README.md
+│
+├── dataset/
+│   ├── Fake.csv
+│   └── True.csv
+│
+├── models/
+│   ├── model.pkl
+│   └── vectorizer.pkl
+│
+└── reports/
+    └── evaluation_report.txt
 ```
 
 ---
 
-## ⚙️ Machine Learning Workflow
-
-1. Data Collection
-2. Data Cleaning
-3. Text Preprocessing
-4. TF-IDF Vectorization
-5. Model Training
-6. Prediction System
-7. Web Application Deployment
-
----
-
-## 🤖 Machine Learning Model
-
-| Model | Purpose |
-|---|---|
-| Logistic Regression | Final Deployment Model |
-
----
-
-## 📊 Model Accuracy
-
-| Model | Accuracy |
-|---|---|
-| Logistic Regression | ~98% |
-
----
-
-## ▶️ How to Run Locally
+## ⚙️ Installation & Setup
 
 ### Clone Repository
 
@@ -88,7 +111,11 @@ Misinformation-Detection-System/
 git clone https://github.com/Prince-Kumar-Saw/Misinformation-Detection-System.git
 ```
 
----
+### Move into Project Folder
+
+```bash
+cd Misinformation-Detection-System
+```
 
 ### Install Dependencies
 
@@ -96,9 +123,13 @@ git clone https://github.com/Prince-Kumar-Saw/Misinformation-Detection-System.gi
 pip install -r requirements.txt
 ```
 
----
+### Train the Model
 
-### Run Application
+```bash
+python main.py
+```
+
+### Run Streamlit App
 
 ```bash
 streamlit run app.py
@@ -106,48 +137,63 @@ streamlit run app.py
 
 ---
 
-## 📷 Application Preview
+## 📡 Live News Analysis
 
-### 🏠 Homepage
+The application integrates with NewsAPI to fetch real-time headlines and analyze them using the trained ML model.
 
-![Homepage](screenshots/home.png)
-
----
-
-## 🚨 Fake News Detection Examples
-
-| Example 1 | Example 2 |
-|---|---|
-| ![](screenshots/fake1.png) | ![](screenshots/fake2.png) |
+Since live headlines are shorter than full-length training articles, the system performs source-aware credibility calibration for reputed publishers.
 
 ---
 
-## ✅ Real News Detection Examples
+# 📷 Application Screenshots
 
-| Example 1 | Example 2 |
-|---|---|
-| ![](screenshots/real1.png) | ![](screenshots/real2.png) |
+## 🏠 Home Interface
 
----
-
-## 💡 Future Improvements
-
-- Live News API Integration
-- Explainable AI Predictions
-- User Authentication System
-- Database Integration
-- Advanced NLP Models
+![Home Page](screenshots/home1.png)
 
 ---
 
-## 👨‍💻 Author
+## 🚨 Fake News Detection
+
+![Fake News Result 1](screenshots/fake1.png)
+
+![Fake News Result 2](screenshots/fake2.png)
+
+---
+
+## ✅ Real News Detection
+
+![Real News Result 1](screenshots/real1.png)
+
+![Real News Result 2](screenshots/real2.png)
+
+---
+
+## 📰 Live News Analysis
+
+![Fetch News Result 1](screenshots/fetchnews1.png)
+
+![Fetch News Result 2](screenshots/fetchnews2.png)
+
+---
+
+## 🎯 Future Improvements
+
+- Deep Learning-based NLP models
+- Transformer/BERT integration
+- Fake news explainability visualization
+- Multi-language news support
+- User authentication system
+- News source credibility ranking
+
+---
+
+## 👨‍💻 Developed By
 
 Prince Kumar Saw
 
-ECE Student | Machine Learning Enthusiast
-
 ---
 
-## ⭐ Support
+## 📄 License
 
-If you like this project, consider giving it a star on GitHub.
+This project is for educational and learning purposes.
