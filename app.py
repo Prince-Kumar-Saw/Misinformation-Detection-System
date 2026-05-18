@@ -57,6 +57,7 @@ trusted_sources = [
     "BBC News",
     "BBC",
     "CNN",
+    "NPR",
     "Reuters",
     "NBC News",
     "CBS News",
@@ -65,9 +66,11 @@ trusted_sources = [
     "Associated Press",
     "AP News",
     "The Guardian",
+    "GSMArena.com",
     "Al Jazeera English",
     "ABC News",
     "Fox News",
+    "KABC-TV",
     "CNBC",
     "The Hindu",
     "Hindustan Times",
@@ -404,10 +407,10 @@ if st.button("📡 Fetch Latest News"):
             # -------------------------------
             if source in trusted_sources:
 
-                real_probability += 10
+                real_probability += 35
 
-                if real_probability > 100:
-                    real_probability = 100
+                if real_probability > 98:
+                    real_probability = 98
 
                 fake_probability = 100 - real_probability
 
