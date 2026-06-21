@@ -1,4 +1,4 @@
-# 📰 AI-Powered Misinformation Detection System
+# 📰 AI-Powered Misinformation Detection System 
 
 An end-to-end Machine Learning and NLP-based web application that detects whether a news article is likely reliable or potentially suspicious using text analysis, TF-IDF vectorization, and Logistic Regression.
 
